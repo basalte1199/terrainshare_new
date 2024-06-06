@@ -178,15 +178,6 @@ def draw_tags(
                    cv.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2, cv.LINE_AA)
         
 
-        if tag_id == 1:
-            lastest_center = (int(center[0]), int(center[1]))
-            lastest_position = lastest_center
-        else:
-            lastest_center = lastest_position
-
-        if tag_id == 2:
-
-            cv.line(image, (lastest_position[0],lastest_position[1]), (center[0],center[1]), (0, 0, 0), 2)
 
 
 
