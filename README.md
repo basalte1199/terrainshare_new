@@ -22,5 +22,8 @@ https://github.com/Kazuhito00/AprilTag-Detection-Python-Sample
 こちらのリポジトリをRealSense化した。
 タグの中心の距離を取るようになっている
 
-今後terrainshare_new.pyに格納し、
-スマホでAprilTagを表示切替するwebサイトを作ることで簡易的なUIを作ることを計画している。
+・ros2_april_tag_realsense.py
+ROS2とRealSenseでARタグをするプログラム。
+基本的に上をROS2化しただけ。今後tf出力などもやる予定。
+
+今後もwebサイト追加などいろいろとやることがあるので応援よろしくお願いします！
