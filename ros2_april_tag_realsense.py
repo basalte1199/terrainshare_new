@@ -68,8 +68,8 @@ class RsSub(Node):
             tag_id = tag.tag_id
             center = tag.center
             corners = tag.corners
-
-            depth_data = depth_image[int(center[1]), int(center[0])]  # Note the correct order of indices
+            #タグの深度を測定
+            depth_data = depth_image[int(center[0])][int(center[0])]
 
             center = (int(center[0]), int(center[1]))
             corner_01 = (int(corners[0][0]), int(corners[0][1]))
