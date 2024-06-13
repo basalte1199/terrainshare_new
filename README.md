@@ -25,5 +25,6 @@ https://github.com/Kazuhito00/AprilTag-Detection-Python-Sample
 ・ros2_april_tag_realsense.py
 ROS2とRealSenseでARタグをするプログラム。
 基本的に上をROS2化しただけ。今後tf出力などもやる予定。
+RealSenseのrgbd topicを起動し、別のターミナルでこのプログラムを起動します。
 
 今後もwebサイト追加などいろいろとやることがあるので応援よろしくお願いします！
