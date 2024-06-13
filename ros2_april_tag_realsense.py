@@ -20,6 +20,7 @@ class RsSub(Node):
         self.lastest_position = []
         self.lastest_center = []
         self.at_detector = self.setup_detector()
+        #サブスクライブなどのROSの設定、apriltag認識のための設定
 
     def get_args(self):
         parser = argparse.ArgumentParser()
