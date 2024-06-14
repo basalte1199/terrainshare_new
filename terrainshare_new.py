@@ -55,9 +55,10 @@ jsonObj = json.load(open("param.json"))
 
 # Configure depth and color streams
 
-
+#RealSenseの^_^データ取得のための手続き
 pipeline = rs.pipeline()
 config = rs.config()
+#複数繋ぐ時に必要なシリアル番号記載。一台なら必要ない
 config.enable_device('146322074637')
 
 pipeline_wrapper = rs.pipeline_wrapper(pipeline)
@@ -95,7 +96,7 @@ align_to =rs.stream.color
 align = rs.align(align_to)
 
 
-
+#pc画面の状態設定
 def mouse_cb(event, x, y, flags, param):
 
     if event == cv2.EVENT_LBUTTONDOWN:
@@ -185,7 +186,7 @@ def line3d(out, pt1, pt2, color=(0x80, 0x80, 0x80), thickness=1):
     if inside:
         cv2.line(out, p0, p1, color, thickness, cv2.LINE_AA)
 
-
+#描画計算
 def grid(out, pos, rotation=np.eye(3), size=1, n=10, color=(0x80, 0x80, 0x80)):
     """draw a grid on xz plane"""
     pos = np.array(pos)
@@ -232,7 +233,7 @@ def frustum(out, intrinsics, color=(0x40, 0x40, 0x40)):
         line3d(out, view(bottom_right), view(bottom_left), color)
         line3d(out, view(bottom_left), view(top_left), color)
 
-
+#プロジェクター、PC画面両方の描画
 def pointcloud(out, verts, texcoords, color, painter=True):
     """draw point cloud with optional painter's algorithm"""
     if painter:
@@ -378,7 +379,7 @@ while True:
     cv2.imshow(state.WIN_NAME, out)
     cv2.imshow("overview", depth_colormap)
     key = cv2.waitKey(1)
-
+    #PC画面の状態変更キー
     if key == ord("r"):
         state.reset()
 
