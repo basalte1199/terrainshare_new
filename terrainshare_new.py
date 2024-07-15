@@ -278,6 +278,116 @@ def pointcloud(out, verts, texcoords, color, painter=True):
 
 out = np.empty((h, w, 3), dtype=np.uint8)
 
+
+
+
+
+#artagのためのパラメーター設定
+def get_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--device", type=int, default=0)
+    parser.add_argument("--width", help='cap width', type=int, default=960)
+    parser.add_argument("--height", help='cap height', type=int, default=540)
+
+    parser.add_argument("--families", type=str, default='tag36h11')
+    parser.add_argument("--nthreads", type=int, default=1)
+    parser.add_argument("--quad_decimate", type=float, default=1.5)
+    parser.add_argument("--quad_sigma", type=float, default=0.0)
+    parser.add_argument("--refine_edges", type=int, default=1)
+    parser.add_argument("--decode_sharpening", type=float, default=0.25)
+    parser.add_argument("--debug", type=int, default=0)
+
+    args = parser.parse_args()
+
+    return args
+
+# artagを認識する処理
+def draw_tags(
+    image,
+    tags,
+    elapsed_time,
+    aligend_depth_frame,
+    lastest_position,
+    lastest_center
+):
+    for tag in tags:
+        tag_family = tag.tag_family
+        tag_id = tag.tag_id
+        center = tag.center
+        corners = tag.corners
+
+
+        depth_data = aligend_depth_frame.get_distance(int(center[0]),int(center[1]))
+
+        center = (int(center[0]), int(center[1]))
+        corner_01 = (int(corners[0][0]), int(corners[0][1]))
+        corner_02 = (int(corners[1][0]), int(corners[1][1]))
+        corner_03 = (int(corners[2][0]), int(corners[2][1]))
+        corner_04 = (int(corners[3][0]), int(corners[3][1]))
+
+
+        #普通にこの辺の描画は実際には必要ない(デバック用)
+        # 中心
+        cv2.circle(image, (center[0], center[1]), 5, (0, 0, 255), 2)
+
+        # 各辺
+        cv2.line(image, (corner_01[0], corner_01[1]),
+                (corner_02[0], corner_02[1]), (255, 0, 0), 2)
+        cv2.line(image, (corner_02[0], corner_02[1]),
+                (corner_03[0], corner_03[1]), (255, 0, 0), 2)
+        cv2.line(image, (corner_03[0], corner_03[1]),
+                (corner_04[0], corner_04[1]), (0, 255, 0), 2)
+        cv2.line(image, (corner_04[0], corner_04[1]),
+                (corner_01[0], corner_01[1]), (0, 255, 0), 2)
+
+
+        cv2.line(image, (0,center[1]), (1280,center[1]), (0, 0, 0), 2)
+        cv2.line(image, (center[0],0), (center[0],720), (0, 0, 0), 2)
+
+        # タグファミリー、タグID
+        # cv.putText(image,
+        #            str(tag_family) + ':' + str(tag_id),
+        #            (corner_01[0], corner_01[1] - 10), cv.FONT_HERSHEY_SIMPLEX,
+        #            0.6, (0, 255, 0), 1, cv.LINE_AA)
+        cv2.putText(image, "id: " + str(tag_id), (center[0] - 10, center[1] - 10),
+                   cv.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2, cv.LINE_AA)
+
+        cv2.putText(image, "Depth " + str(int(depth_data * 100)) + "cm", (center[0] - 40, center[1] - 40),
+                   cv.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2, cv.LINE_AA)
+        
+        #ここまでデバック用
+
+
+        #ここから各ARタグに対しての操作設定
+        #ライン描画
+        #if tag_id == 1:
+            #first_recognition = center
+            #思ったよりだるい、一旦スルー
+
+        
+ 
+        #全てを消す
+
+        #最悪重かったらPC画面側の描画を消してもいいかも
+        
+
+
+
+    # 処理時間
+    cv2.putText(image,
+               "Elapsed Time:" + '{:.1f}'.format(elapsed_time * 1000) + "ms",
+               (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2,
+               cv2.LINE_AA)
+
+    #print(lastest_center)
+    return image, lastest_center
+
+elapsed_time = 0
+lastest_position = []
+lastest_center = []
+
+
 while True:
     # Grab camera data
     if not state.paused:
@@ -377,7 +487,44 @@ while True:
     img_mask = cv2.medianBlur(depth_colormap,ksize)
 
     cv2.imshow(state.WIN_NAME, out)
-    cv2.imshow("overview", depth_colormap)
+
+    #artagを追加した状態の描画を追加
+    args = get_args()
+
+    cap_device = args.device
+    cap_width = args.width
+    cap_height = args.height
+
+    families = args.families
+    nthreads = args.nthreads
+    quad_decimate = args.quad_decimate
+    quad_sigma = args.quad_sigma
+    refine_edges = args.refine_edges
+    decode_sharpening = args.decode_sharpening
+    debug = args.debug
+
+    at_detector = Detector(
+        families=families,
+        nthreads=nthreads,
+        quad_decimate=quad_decimate,
+        quad_sigma=quad_sigma,
+        refine_edges=refine_edges,
+        decode_sharpening=decode_sharpening,
+        debug=debug,
+    )
+
+    tags = at_detector.detect(
+            color_image,
+            estimate_tag_pose=False,
+            camera_params=None,
+            tag_size=None,
+    )
+    
+    debug_image, lastest_position = draw_tags(depth_colormap, tags, elapsed_time, aligend_depth_frame, lastest_position, lastest_center)
+    print(lastest_position)
+
+
+    cv2.imshow("overview", debug_image)
     key = cv2.waitKey(1)
     #PC画面の状態変更キー
     if key == ord("r"):
