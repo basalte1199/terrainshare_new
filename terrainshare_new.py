@@ -346,15 +346,15 @@ def draw_tags(
         cv2.line(image, (center[0],0), (center[0],720), (0, 0, 0), 2)
 
         # タグファミリー、タグID
-        # cv.putText(image,
+        # cv2.putText(image,
         #            str(tag_family) + ':' + str(tag_id),
-        #            (corner_01[0], corner_01[1] - 10), cv.FONT_HERSHEY_SIMPLEX,
-        #            0.6, (0, 255, 0), 1, cv.LINE_AA)
+        #            (corner_01[0], corner_01[1] - 10), cv2.FONT_HERSHEY_SIMPLEX,
+        #            0.6, (0, 255, 0), 1, cv2.LINE_AA)
         cv2.putText(image, "id: " + str(tag_id), (center[0] - 10, center[1] - 10),
-                   cv.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2, cv.LINE_AA)
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2, cv2.LINE_AA)
 
         cv2.putText(image, "Depth " + str(int(depth_data * 100)) + "cm", (center[0] - 40, center[1] - 40),
-                   cv.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2, cv.LINE_AA)
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2, cv2.LINE_AA)
         
         #ここまでデバック用
 
@@ -377,7 +377,7 @@ def draw_tags(
     # 処理時間
     cv2.putText(image,
                "Elapsed Time:" + '{:.1f}'.format(elapsed_time * 1000) + "ms",
-               (10, 30), cv.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2,
+               (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2,
                cv2.LINE_AA)
 
     #print(lastest_center)
